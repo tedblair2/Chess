@@ -221,6 +221,62 @@ class ChessBoard {
         return canMoveToDestination(from, to)
     }
 
+    private fun findKingPosition(player: ChessPlayer):Square?{
+        for(row in 1..8){
+            for(column in 1..8){
+                val piece=pieceAt(row,column)
+                if (piece?.rank==ChessRank.KING && piece.player==player){
+                    return Square(column,row)
+                }
+            }
+        }
+        return null
+    }
+
+    private fun isSquareThreatened(opponent: ChessPlayer , square: Square):Boolean{
+        for(row in 1..8) {
+            for (column in 1..8) {
+                val piece = pieceAt(row, column)
+                if (piece != null && piece.player == opponent) {
+                    if (canMove(Square(column, row), square)) {
+                        return true
+                    }
+                }
+            }
+        }
+        return false
+    }
+
+    private fun isKingInCheck():Boolean{
+        val playerAtTurn=gameState.value.playerAtTurn
+        val kingPosition=findKingPosition(playerAtTurn)
+        return kingPosition?.let { isSquareThreatened(playerAtTurn.oppositePlayer(), it) } ?: false
+    }
+
+    private fun isCheckMate():Boolean{
+        if (!isKingInCheck()) return false
+        val playerAtTurn=gameState.value.playerAtTurn
+        val kingPosition=findKingPosition(playerAtTurn) ?: return false
+
+        val directions = listOf(
+            Square(kingPosition.col - 1, kingPosition.row),
+            Square(kingPosition.col + 1, kingPosition.row),
+            Square(kingPosition.col, kingPosition.row - 1),
+            Square(kingPosition.col, kingPosition.row + 1),
+            Square(kingPosition.col - 1, kingPosition.row - 1),
+            Square(kingPosition.col + 1, kingPosition.row + 1),
+            Square(kingPosition.col - 1, kingPosition.row + 1),
+            Square(kingPosition.col + 1, kingPosition.row - 1)
+        )
+
+        for (direction in directions){
+            if (isValidPosition(direction.col,direction.row) && !isSquareThreatened(playerAtTurn.oppositePlayer(),direction)){
+                return false
+            }
+        }
+        return true
+    }
+
     fun onEvent(action:ChessEvents){
         when(action){
             is ChessEvents.GetPieceAt -> {
