@@ -77,7 +77,9 @@ class ChessBoard {
                state.copy(
                    previousState = state.copy(pieces = state.pieces.map { it.copyOf() }.toTypedArray()),
                    pieces = board,
-                   movingPiece = null)
+                   movingPiece = null,
+                   playerAtTurn = piece.player.oppositePlayer(),
+               )
            }
        }
     }
@@ -232,7 +234,9 @@ class ChessBoard {
                 val movingPiece=gameState.value.movingPiece
                 movingPiece?.let {
                     if (action.col != it.column || action.row != it.row){
-                        movePiece(it,action.col,action.row)
+                        if (movingPiece.player == gameState.value.playerAtTurn){
+                            movePiece(it,action.col,action.row)
+                        }
                     }
                 }
             }
