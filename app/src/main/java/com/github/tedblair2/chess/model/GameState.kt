@@ -4,7 +4,8 @@ data class GameState(
     val pieces:Array<Array<ChessPiece?>> = emptyPieces() ,
     val selectedPiece: ChessPiece?=null ,
     val movingPiece:ChessPiece?=null,
-    val previousPieces:Array<Array<ChessPiece?>> = emptyPieces()
+    val previousState:GameState?=null,
+    val playerAtTurn:ChessPlayer=ChessPlayer.WHITE
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -15,7 +16,8 @@ data class GameState(
         if (!pieces.contentDeepEquals(other.pieces)) return false
         if (selectedPiece != other.selectedPiece) return false
         if (movingPiece != other.movingPiece) return false
-        if (!previousPieces.contentDeepEquals(other.previousPieces)) return false
+        if (previousState != other.previousState) return false
+        if (playerAtTurn != other.playerAtTurn) return false
 
         return true
     }
@@ -24,7 +26,8 @@ data class GameState(
         var result = pieces.contentDeepHashCode()
         result = 31 * result + (selectedPiece?.hashCode() ?: 0)
         result = 31 * result + (movingPiece?.hashCode() ?: 0)
-        result = 31 * result + previousPieces.contentDeepHashCode()
+        result = 31 * result + (previousState?.hashCode() ?: 0)
+        result = 31 * result + playerAtTurn.hashCode()
         return result
     }
 

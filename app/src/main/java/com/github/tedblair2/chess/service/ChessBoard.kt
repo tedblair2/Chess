@@ -28,7 +28,7 @@ class ChessBoard {
         _gameState.update {
             it.copy(
                 pieces = emptyPieces(),
-                previousPieces = emptyPieces(),
+                previousState = null,
                 movingPiece = null,
                 selectedPiece = null
             )
@@ -69,12 +69,15 @@ class ChessBoard {
         val from=Square(piece.column,piece.row)
         val to=Square(newCol,newRow)
        if (canMove(from, to)){
-           _gameState.update {
-               val board=it.pieces
+           _gameState.update {state->
+               val board=state.pieces.map { it.copyOf() }.toTypedArray()
                val newPiece=piece.copy(column = newCol, row = newRow)
                board[newPiece.row - 1][newPiece.column - 1] = newPiece
                board[piece.row - 1][piece.column - 1] = null
-               it.copy(pieces = board,movingPiece = null)
+               state.copy(
+                   previousState = state.copy(pieces = state.pieces.map { it.copyOf() }.toTypedArray()),
+                   pieces = board,
+                   movingPiece = null)
            }
        }
     }
@@ -233,7 +236,11 @@ class ChessBoard {
                     }
                 }
             }
-            ChessEvents.UndoLast->{}
+            ChessEvents.UndoLast->{
+                _gameState.update {
+                    it.previousState ?: it
+                }
+            }
         }
     }
 }
