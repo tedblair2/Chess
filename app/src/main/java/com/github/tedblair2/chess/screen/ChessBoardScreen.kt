@@ -31,25 +31,32 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.github.tedblair2.chess.R
 import com.github.tedblair2.chess.events.ChessEvents
+import com.github.tedblair2.chess.model.ChessPlayer
+import com.github.tedblair2.chess.model.ChessRank
 import com.github.tedblair2.chess.model.ChessTile
+import com.github.tedblair2.chess.model.GameState
 import com.github.tedblair2.chess.model.GameStateTest
 import com.github.tedblair2.chess.service.ChessBoard
+import com.github.tedblair2.chess.viewmodel.GameViewModel
 import kotlin.math.ceil
 
 @Composable
 fun ChessBoardScreen(
     modifier: Modifier=Modifier,
-    chessBoard: ChessBoard
+    chessBoard: ChessBoard,
+    chessBoardViewModel: GameViewModel
 ) {
     val gameState by chessBoard.gameState.collectAsState()
+    val gameStateTest by chessBoardViewModel.gameState.collectAsState()
     
     Column(modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ChessBoard(
-            gameStateTest = gameState ,
-            onEvent = chessBoard::onEvent,
-            modifier = Modifier.padding(top = 25.dp, bottom = 10.dp)
+            gameState = gameState,
+            onEvent = chessBoardViewModel::onEvent,
+            modifier = Modifier.padding(top = 25.dp, bottom = 10.dp),
+            gameStateTest = gameStateTest
         )
 
         Button(onClick = { chessBoard.onEvent(ChessEvents.ResetGame) }) {
@@ -65,7 +72,8 @@ fun ChessBoardScreen(
 @Composable
 fun ChessBoard(
     modifier: Modifier=Modifier ,
-    gameStateTest: GameStateTest ,
+    gameState: GameStateTest ,
+    gameStateTest: GameState,
     onEvent:(ChessEvents)->Unit={}
 ) {
     val density= LocalDensity.current
@@ -73,6 +81,7 @@ fun ChessBoard(
     val screenWidth=configuration.screenWidthDp.dp
     val screenHeight=configuration.screenHeightDp.dp
     val pieces= loadPainters()
+    val images= loadImages()
 
     val size by remember {
         derivedStateOf {
@@ -160,7 +169,8 @@ fun ChessBoard(
                     val chessPiece = chessPieces[column]
                     chessPiece?.let {
                         if (it != gameStateTest.movingPiece){
-                            val img=pieces[it.resId]!!
+                            //val img=pieces[it.resId]!!
+                            val img=images[Pair(it.player,it.rank)]!!
                             translate(
                                 left = pieceSize * (it.column - 1) ,
                                 top = pieceSize * (it.row - 1)
@@ -179,7 +189,8 @@ fun ChessBoard(
                 }
             }
             gameStateTest.movingPiece?.let { piece->
-                val img=pieces[piece.resId]!!
+                //val img=pieces[piece.resId]!!
+                val img=images[Pair(piece.player,piece.rank)]!!
                 translate(
                     left = (if (isDragging) offsetX else pieceSize * (piece.column - 1)).coerceIn(0f,boardSize-pieceSize) ,
                     top = (if (isDragging) offsetY else pieceSize * (piece.row - 1)).coerceIn(0f,boardSize-pieceSize)
@@ -196,6 +207,24 @@ fun ChessBoard(
             }
         }
     }
+}
+
+@Composable
+fun loadImages():Map<Pair<ChessPlayer,ChessRank>,Painter>{
+    return mapOf(
+        Pair(ChessPlayer.WHITE,ChessRank.PAWN) to painterResource(id = R.drawable.pawn_white),
+        Pair(ChessPlayer.BLACK,ChessRank.PAWN) to painterResource(id = R.drawable.pawn_black),
+        Pair(ChessPlayer.WHITE,ChessRank.ROOK) to painterResource(id = R.drawable.rook_white),
+        Pair(ChessPlayer.BLACK,ChessRank.ROOK) to painterResource(id = R.drawable.rook_black),
+        Pair(ChessPlayer.WHITE,ChessRank.KNIGHT) to painterResource(id = R.drawable.knight_white),
+        Pair(ChessPlayer.BLACK,ChessRank.KNIGHT) to painterResource(id = R.drawable.knight_black),
+        Pair(ChessPlayer.WHITE,ChessRank.BISHOP) to painterResource(id = R.drawable.bishop_white),
+        Pair(ChessPlayer.BLACK,ChessRank.BISHOP) to painterResource(id = R.drawable.bishop_black),
+        Pair(ChessPlayer.WHITE,ChessRank.QUEEN) to painterResource(id = R.drawable.queen_white),
+        Pair(ChessPlayer.BLACK,ChessRank.QUEEN) to painterResource(id = R.drawable.queen_black),
+        Pair(ChessPlayer.WHITE,ChessRank.KING) to painterResource(id = R.drawable.king_white),
+        Pair(ChessPlayer.BLACK,ChessRank.KING) to painterResource(id = R.drawable.king_black)
+    )
 }
 
 @Composable
