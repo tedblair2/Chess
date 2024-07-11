@@ -1,6 +1,6 @@
 [versions]
 agp = "8.4.2"
-kotlin = "1.9.0"
+kotlin = "2.0.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -8,6 +8,10 @@ espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.3"
 activityCompose = "1.9.0"
 composeBom = "2024.06.00"
+ktor-version = "2.3.12"
+ksp-plugin-version="2.0.0-1.0.22"
+hilt-version="2.49"
+compose-hilt-navigation-version="1.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -24,8 +28,24 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+ktor-core={module="io.ktor:ktor-client-core",version.ref="ktor-version"}
+ktor-cio={module="io.ktor:ktor-client-cio",version.ref="ktor-version"}
+ktor-content-negotiation={module="io.ktor:ktor-client-content-negotiation",version.ref="ktor-version"}
+ktor-serialization={module="io.ktor:ktor-serialization-kotlinx-json",version.ref="ktor-version"}
+ktor-logging={module="io.ktor:ktor-client-logging",version.ref="ktor-version"}
+ktor-websocket={module="io.ktor:ktor-client-websockets",version.ref="ktor-version"}
+dagger-hilt={module="com.google.dagger:hilt-android",version.ref="hilt-version"}
+dagger-hilt-ksp={module="com.google.dagger:hilt-compiler",version.ref="hilt-version"}
+compose-hilt-navigation={module="androidx.hilt:hilt-navigation-compose",version.ref="compose-hilt-navigation-version"}
+
+[bundles]
+ktor=["ktor-core","ktor-cio","ktor-content-negotiation","ktor-serialization","ktor-logging","ktor-websocket"]
+hilt=["dagger-hilt","compose-hilt-navigation"]
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlinx-serialization = {id="org.jetbrains.kotlin.plugin.serialization",version.ref="kotlin"}
+ksp-plugin={ id="com.google.devtools.ksp",version.ref="ksp-plugin-version" }
+hilt-plugin={ id="com.google.dagger.hilt.android",version.ref="hilt-version" }
 

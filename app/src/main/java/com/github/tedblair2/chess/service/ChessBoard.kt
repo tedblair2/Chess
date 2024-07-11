@@ -2,12 +2,12 @@ package com.github.tedblair2.chess.service
 
 import com.github.tedblair2.chess.R
 import com.github.tedblair2.chess.events.ChessEvents
-import com.github.tedblair2.chess.model.ChessPiece
+import com.github.tedblair2.chess.model.ChessPiece2
 import com.github.tedblair2.chess.model.ChessPlayer
 import com.github.tedblair2.chess.model.ChessRank
-import com.github.tedblair2.chess.model.GameState
+import com.github.tedblair2.chess.model.GameStateTest
 import com.github.tedblair2.chess.model.Square
-import com.github.tedblair2.chess.model.emptyPieces
+import com.github.tedblair2.chess.model.emptyPieces2
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -17,47 +17,47 @@ import kotlin.math.min
 
 class ChessBoard {
 
-    private val _gameState= MutableStateFlow(GameState())
-    val gameState = _gameState.asStateFlow()
+    private val _gameStateTest= MutableStateFlow(GameStateTest())
+    val gameState = _gameStateTest.asStateFlow()
 
     init {
         reset()
     }
 
     private fun reset(){
-        _gameState.update {
+        _gameStateTest.update {
             it.copy(
-                pieces = emptyPieces(),
+                pieces = emptyPieces2(),
                 previousState = null,
                 movingPiece = null,
                 selectedPiece = null
             )
         }
         for (i in 0..1){
-            placePiece(ChessPiece(column=1+i*7,row=1, player = ChessPlayer.WHITE, rank = ChessRank.ROOK, resId = R.drawable.rook_white))
-            placePiece(ChessPiece(column=1+i*7,row=8, player = ChessPlayer.BLACK, rank = ChessRank.ROOK, resId = R.drawable.rook_black))
+            placePiece(ChessPiece2(column=1+i*7,row=1, player = ChessPlayer.WHITE, rank = ChessRank.ROOK, resId = R.drawable.rook_white))
+            placePiece(ChessPiece2(column=1+i*7,row=8, player = ChessPlayer.BLACK, rank = ChessRank.ROOK, resId = R.drawable.rook_black))
 
-            placePiece(ChessPiece(column=2+i*5 ,row=1, player = ChessPlayer.WHITE, rank = ChessRank.KNIGHT, resId = R.drawable.knight_white))
-            placePiece(ChessPiece(column=2+i*5,row=8, player = ChessPlayer.BLACK, rank = ChessRank.KNIGHT, resId = R.drawable.knight_black))
+            placePiece(ChessPiece2(column=2+i*5 ,row=1, player = ChessPlayer.WHITE, rank = ChessRank.KNIGHT, resId = R.drawable.knight_white))
+            placePiece(ChessPiece2(column=2+i*5,row=8, player = ChessPlayer.BLACK, rank = ChessRank.KNIGHT, resId = R.drawable.knight_black))
 
-            placePiece(ChessPiece(column=3+i*3,row=1, player = ChessPlayer.WHITE,rank=ChessRank.BISHOP, resId = R.drawable.bishop_white))
-            placePiece(ChessPiece(column=3+i*3,row=8, player = ChessPlayer.BLACK,rank=ChessRank.BISHOP, resId = R.drawable.bishop_black))
+            placePiece(ChessPiece2(column=3+i*3,row=1, player = ChessPlayer.WHITE,rank=ChessRank.BISHOP, resId = R.drawable.bishop_white))
+            placePiece(ChessPiece2(column=3+i*3,row=8, player = ChessPlayer.BLACK,rank=ChessRank.BISHOP, resId = R.drawable.bishop_black))
         }
 
         for (i in 1..8){
-            placePiece(ChessPiece(column=i,row=2, player = ChessPlayer.WHITE, rank = ChessRank.PAWN, resId = R.drawable.pawn_white))
-            placePiece(ChessPiece(column=i,row=7, player = ChessPlayer.BLACK, rank = ChessRank.PAWN, resId = R.drawable.pawn_black))
+            placePiece(ChessPiece2(column=i,row=2, player = ChessPlayer.WHITE, rank = ChessRank.PAWN, resId = R.drawable.pawn_white))
+            placePiece(ChessPiece2(column=i,row=7, player = ChessPlayer.BLACK, rank = ChessRank.PAWN, resId = R.drawable.pawn_black))
         }
 
-        placePiece(ChessPiece(column=4,row=1, player = ChessPlayer.WHITE, rank = ChessRank.QUEEN, resId = R.drawable.queen_white))
-        placePiece(ChessPiece(column=4,row=8, player = ChessPlayer.BLACK, rank = ChessRank.QUEEN, resId = R.drawable.queen_black))
-        placePiece(ChessPiece(column=5,row=1, player = ChessPlayer.WHITE, rank = ChessRank.KING, resId = R.drawable.king_white))
-        placePiece(ChessPiece(column=5,row=8, player = ChessPlayer.BLACK, rank = ChessRank.KING, resId = R.drawable.king_black))
+        placePiece(ChessPiece2(column=4,row=1, player = ChessPlayer.WHITE, rank = ChessRank.QUEEN, resId = R.drawable.queen_white))
+        placePiece(ChessPiece2(column=4,row=8, player = ChessPlayer.BLACK, rank = ChessRank.QUEEN, resId = R.drawable.queen_black))
+        placePiece(ChessPiece2(column=5,row=1, player = ChessPlayer.WHITE, rank = ChessRank.KING, resId = R.drawable.king_white))
+        placePiece(ChessPiece2(column=5,row=8, player = ChessPlayer.BLACK, rank = ChessRank.KING, resId = R.drawable.king_black))
     }
 
-    private fun placePiece(piece: ChessPiece) {
+    private fun placePiece(piece: ChessPiece2) {
         if (isValidPosition(piece.column, piece.row)) {
-            _gameState.update {
+            _gameStateTest.update {
                 val board=it.pieces
                 board[piece.row - 1][piece.column - 1] = piece
                 it.copy(pieces = board)
@@ -65,11 +65,11 @@ class ChessBoard {
         }
     }
 
-    private fun movePiece(piece: ChessPiece, newCol: Int, newRow: Int) {
+    private fun movePiece(piece: ChessPiece2 , newCol: Int , newRow: Int) {
         val from=Square(piece.column,piece.row)
         val to=Square(newCol,newRow)
        if (canMove(from, to)){
-           _gameState.update {state->
+           _gameStateTest.update { state->
                val board=state.pieces.map { it.copyOf() }.toTypedArray()
                val newPiece=piece.copy(column = newCol, row = newRow)
                board[newPiece.row - 1][newPiece.column - 1] = newPiece
@@ -107,7 +107,7 @@ class ChessBoard {
         }
     }
 
-    private fun pieceAt(row: Int, col: Int): ChessPiece? {
+    private fun pieceAt(row: Int, col: Int): ChessPiece2? {
         return gameState.value.pieces[row - 1][col - 1]
     }
 
@@ -280,7 +280,7 @@ class ChessBoard {
     fun onEvent(action:ChessEvents){
         when(action){
             is ChessEvents.GetPieceAt -> {
-                _gameState.update {
+                _gameStateTest.update {
                     val piece=pieceAt(action.row,action.col)
                     it.copy(movingPiece = piece, selectedPiece = piece)
                 }
@@ -297,7 +297,7 @@ class ChessBoard {
                 }
             }
             ChessEvents.UndoLast->{
-                _gameState.update {
+                _gameStateTest.update {
                     it.previousState ?: it
                 }
             }

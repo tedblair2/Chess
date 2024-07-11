@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.github.tedblair2.chess.R
 import com.github.tedblair2.chess.events.ChessEvents
 import com.github.tedblair2.chess.model.ChessTile
-import com.github.tedblair2.chess.model.GameState
+import com.github.tedblair2.chess.model.GameStateTest
 import com.github.tedblair2.chess.service.ChessBoard
 import kotlin.math.ceil
 
@@ -47,7 +47,7 @@ fun ChessBoardScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         ChessBoard(
-            gameState = gameState ,
+            gameStateTest = gameState ,
             onEvent = chessBoard::onEvent,
             modifier = Modifier.padding(top = 25.dp, bottom = 10.dp)
         )
@@ -65,7 +65,7 @@ fun ChessBoardScreen(
 @Composable
 fun ChessBoard(
     modifier: Modifier=Modifier ,
-    gameState: GameState ,
+    gameStateTest: GameStateTest ,
     onEvent:(ChessEvents)->Unit={}
 ) {
     val density= LocalDensity.current
@@ -154,12 +154,12 @@ fun ChessBoard(
                     )
                 }
         ) {
-            repeat(gameState.pieces.count()) { row->
-                val chessPieces = gameState.pieces[row]
+            repeat(gameStateTest.pieces.count()) { row->
+                val chessPieces = gameStateTest.pieces[row]
                 repeat(chessPieces.count()) {column->
                     val chessPiece = chessPieces[column]
                     chessPiece?.let {
-                        if (it != gameState.movingPiece){
+                        if (it != gameStateTest.movingPiece){
                             val img=pieces[it.resId]!!
                             translate(
                                 left = pieceSize * (it.column - 1) ,
@@ -178,7 +178,7 @@ fun ChessBoard(
                     }
                 }
             }
-            gameState.movingPiece?.let { piece->
+            gameStateTest.movingPiece?.let { piece->
                 val img=pieces[piece.resId]!!
                 translate(
                     left = (if (isDragging) offsetX else pieceSize * (piece.column - 1)).coerceIn(0f,boardSize-pieceSize) ,

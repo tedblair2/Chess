@@ -10,7 +10,9 @@ import androidx.compose.ui.Modifier
 import com.github.tedblair2.chess.screen.ChessBoardScreen
 import com.github.tedblair2.chess.service.ChessBoard
 import com.github.tedblair2.chess.ui.theme.ChessTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

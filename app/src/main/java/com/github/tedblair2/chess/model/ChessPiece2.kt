@@ -1,8 +1,10 @@
 package com.github.tedblair2.chess.model
 
 import androidx.annotation.DrawableRes
+import kotlinx.serialization.Serializable
 
-data class ChessPiece(
+@Serializable
+data class ChessPiece2(
     val column:Int ,
     val row:Int ,
     val player: ChessPlayer ,
@@ -10,3 +12,12 @@ data class ChessPiece(
     @DrawableRes
     val resId:Int
 )
+
+@Serializable
+data class ChessPiece(
+    val column:Int ,
+    val row:Int ,
+    val player: ChessPlayer ,
+    val rank: ChessRank
+)
+
