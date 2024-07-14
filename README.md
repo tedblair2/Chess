@@ -6,3 +6,4 @@ to who the player is.
 This is a simple version that only supports two players and not more.
 
 ## Images
+![Screenshot_2024-07-14-16-27-16-38 (1)](https://github.com/user-attachments/assets/b254f23e-ec20-42dc-9996-6e36c1ba8c1b)
