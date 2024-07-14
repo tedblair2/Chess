@@ -39,7 +39,6 @@ data class GameStateTest(
 data class GameState(
     val pieces:Array<Array<ChessPiece?>> = emptyPieces() ,
     val movingPiece:ChessPiece?=null ,
-    val previousState:GameState?=null ,
     val playerAtTurn:ChessPlayer=ChessPlayer.WHITE ,
     val connectedPlayers:List<ChessPlayer> = emptyList()
 ) {
@@ -51,7 +50,6 @@ data class GameState(
 
         if (!pieces.contentDeepEquals(other.pieces)) return false
         if (movingPiece != other.movingPiece) return false
-        if (previousState != other.previousState) return false
         if (playerAtTurn != other.playerAtTurn) return false
         if (connectedPlayers != other.connectedPlayers) return false
 
@@ -61,7 +59,6 @@ data class GameState(
     override fun hashCode(): Int {
         var result = pieces.contentDeepHashCode()
         result = 31 * result + (movingPiece?.hashCode() ?: 0)
-        result = 31 * result + (previousState?.hashCode() ?: 0)
         result = 31 * result + playerAtTurn.hashCode()
         result = 31 * result + connectedPlayers.hashCode()
         return result

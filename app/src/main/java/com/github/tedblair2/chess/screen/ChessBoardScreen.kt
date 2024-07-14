@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -48,6 +49,7 @@ fun ChessBoardScreen(
 ) {
     val gameState by chessBoard.gameState.collectAsState()
     val gameStateTest by chessBoardViewModel.gameState.collectAsState()
+    val isConnecting by chessBoardViewModel.isConnecting.collectAsState()
     
     Column(modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -59,11 +61,15 @@ fun ChessBoardScreen(
             gameStateTest = gameStateTest
         )
 
-        Button(onClick = { chessBoard.onEvent(ChessEvents.ResetGame) }) {
+        if (isConnecting){
+            CircularProgressIndicator()
+        }
+
+        Button(onClick = { chessBoardViewModel.onEvent(ChessEvents.ResetGame) }) {
             Text(text = "Reset")
         }
 
-        Button(onClick = { chessBoard.onEvent(ChessEvents.UndoLast) }) {
+        Button(onClick = { chessBoardViewModel.onEvent(ChessEvents.UndoLast) }) {
             Text(text = "Undo")
         }
     }

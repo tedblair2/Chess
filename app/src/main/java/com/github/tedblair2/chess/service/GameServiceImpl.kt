@@ -26,7 +26,7 @@ class GameServiceImpl @Inject constructor(
     private var session:WebSocketSession?=null
     override fun getGameState(): Flow<GameState> = flow{
         session=client.webSocketSession {
-            url("ws://192.168.8.122/play")
+            url("ws://192.168.8.122:8091/play")
         }
         val gameStateFlow=session!!
             .incoming

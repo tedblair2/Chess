@@ -48,4 +48,5 @@ jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "k
 kotlinx-serialization = {id="org.jetbrains.kotlin.plugin.serialization",version.ref="kotlin"}
 ksp-plugin={ id="com.google.devtools.ksp",version.ref="ksp-plugin-version" }
 hilt-plugin={ id="com.google.dagger.hilt.android",version.ref="hilt-version" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
