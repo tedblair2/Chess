@@ -9,7 +9,10 @@ import io.ktor.websocket.serialization.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.serialization.json.Json
 import java.lang.StrictMath.max
 import kotlin.math.abs
@@ -66,12 +69,14 @@ class ChessGame {
 
     private suspend fun sendToWhite(state: GameState){
         val socket=playerSockets[ChessPlayer.WHITE]
-        socket?.sendSerializedBase<GameState>(state, KotlinxWebsocketSerializationConverter(Json),UTF_8)
+        val whiteState=state.copy(player = ChessPlayer.WHITE)
+        socket?.sendSerializedBase<GameState>(whiteState, KotlinxWebsocketSerializationConverter(Json),UTF_8)
     }
 
     private suspend fun sendToBlack(state: GameState){
         val socket=playerSockets[ChessPlayer.BLACK]
-        socket?.sendSerializedBase<GameState>(state, KotlinxWebsocketSerializationConverter(Json),UTF_8)
+        val blackState=state.copy(player = ChessPlayer.BLACK)
+        socket?.sendSerializedBase<GameState>(blackState, KotlinxWebsocketSerializationConverter(Json),UTF_8)
     }
 
     fun makeMove(to: Square){
@@ -168,12 +173,17 @@ class ChessGame {
                 board[newPiece.row - 1][newPiece.column - 1] = newPiece
                 board[piece.row - 1][piece.column - 1] = null
                 previousState.update {
-                    state.copy(pieces = state.pieces.map { it.copyOf() }.toTypedArray())
+                    state.copy(
+                        pieces = state.pieces.map { it.copyOf() }.toTypedArray(),
+                        movingPiece = null,
+                        player = ChessPlayer.BLACK
+                    )
                 }
                 state.copy(
                     pieces = board,
                     movingPiece = null,
                     playerAtTurn = piece.player.oppositePlayer(),
+                    player = ChessPlayer.BLACK
                 )
             }
         }
@@ -182,7 +192,8 @@ class ChessGame {
     private fun GameState.forWhitePlayer():GameState{
         return copy(
             pieces = piecesForWhitePlayer(pieces),
-            movingPiece = movingPiece?.copy(row = 9-movingPiece.row)
+            movingPiece = movingPiece?.copy(row = 9-movingPiece.row),
+            player = ChessPlayer.WHITE
         )
     }
 

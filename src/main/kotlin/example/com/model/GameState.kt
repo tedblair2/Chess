@@ -7,7 +7,8 @@ data class GameState(
     val pieces:Array<Array<ChessPiece?>> = emptyPieces() ,
     val movingPiece:ChessPiece?=null,
     val playerAtTurn:ChessPlayer=ChessPlayer.WHITE,
-    val connectedPlayers:List<ChessPlayer> = emptyList()
+    val connectedPlayers:List<ChessPlayer> = emptyList(),
+    val player: ChessPlayer=ChessPlayer.BLACK
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -19,6 +20,7 @@ data class GameState(
         if (movingPiece != other.movingPiece) return false
         if (playerAtTurn != other.playerAtTurn) return false
         if (connectedPlayers != other.connectedPlayers) return false
+        if (player != other.player) return false
 
         return true
     }
@@ -28,6 +30,7 @@ data class GameState(
         result = 31 * result + (movingPiece?.hashCode() ?: 0)
         result = 31 * result + playerAtTurn.hashCode()
         result = 31 * result + connectedPlayers.hashCode()
+        result = 31 * result + player.hashCode()
         return result
     }
 }

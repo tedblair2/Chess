@@ -6,14 +6,10 @@ import example.com.model.PieceMove
 import example.com.model.Square
 import example.com.service.ChessGame
 import io.ktor.server.application.*
-import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 fun Application.configureRouting(
