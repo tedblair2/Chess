@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,19 +37,17 @@ import com.github.tedblair2.chess.model.ChessPlayer
 import com.github.tedblair2.chess.model.ChessRank
 import com.github.tedblair2.chess.model.ChessTile
 import com.github.tedblair2.chess.model.GameState
-import com.github.tedblair2.chess.model.GameStateTest
-import com.github.tedblair2.chess.service.ChessBoard
 import com.github.tedblair2.chess.viewmodel.GameViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.ceil
 
 @Composable
 fun ChessBoardScreen(
     modifier: Modifier=Modifier,
-    chessBoard: ChessBoard,
     chessBoardViewModel: GameViewModel
 ) {
-    val gameState by chessBoard.gameState.collectAsState()
-    val gameStateTest by chessBoardViewModel.gameState.collectAsState()
+    val gameState by chessBoardViewModel.gameState.collectAsState()
     val isConnecting by chessBoardViewModel.isConnecting.collectAsState()
     
     Column(modifier = modifier.fillMaxSize(),
@@ -58,7 +57,6 @@ fun ChessBoardScreen(
             gameState = gameState,
             onEvent = chessBoardViewModel::onEvent,
             modifier = Modifier.padding(top = 25.dp, bottom = 10.dp),
-            gameStateTest = gameStateTest
         )
 
         if (isConnecting){
@@ -78,15 +76,13 @@ fun ChessBoardScreen(
 @Composable
 fun ChessBoard(
     modifier: Modifier=Modifier ,
-    gameState: GameStateTest ,
-    gameStateTest: GameState,
+    gameState: GameState ,
     onEvent:(ChessEvents)->Unit={}
 ) {
     val density= LocalDensity.current
     val configuration= LocalConfiguration.current
     val screenWidth=configuration.screenWidthDp.dp
     val screenHeight=configuration.screenHeightDp.dp
-    val pieces= loadPainters()
     val images= loadImages()
 
     val size by remember {
@@ -113,6 +109,7 @@ fun ChessBoard(
     var offsetY by remember {
         mutableFloatStateOf(0f)
     }
+    val scope= rememberCoroutineScope()
 
     Box(
         modifier = modifier
@@ -120,14 +117,17 @@ fun ChessBoard(
     ){
         for (x in 1..8){
             for (y in 1..8){
-                val chessTile=ChessTile(x,y)
+                val adjustedX = if (gameState.player == ChessPlayer.BLACK) 9 - x else x
+                val adjustedY = if (gameState.player == ChessPlayer.BLACK) 9 - y else y
+
+                val chessTile = ChessTile(adjustedX, adjustedY, gameState.player)
                 ChessTileScreen(
                     chessTile =  chessTile,
                     modifier = Modifier
                         .size(tileSize)
                         .offset(
-                            x = tileSize * (chessTile.x - 1) ,
-                            y = tileSize * (chessTile.y - 1)
+                            x = tileSize * (x - 1) ,
+                            y = tileSize * (y - 1)
                         ))
             }
         }
@@ -155,7 +155,6 @@ fun ChessBoard(
                             offsetY += dragAmount.y
                         } ,
                         onDragEnd = {
-                            isDragging = false
                             val row = ceil((offsetY / pieceSize) - 0.5)
                                 .toInt()
                                 .plus(1)
@@ -165,17 +164,20 @@ fun ChessBoard(
                                 .plus(1)
                                 .coerceIn(1 , 8)
                             onEvent(ChessEvents.SetMovingPiece(row , column))
+                            scope.launch {
+                                delay(650)
+                                isDragging = false
+                            }
                         }
                     )
                 }
         ) {
-            repeat(gameStateTest.pieces.count()) { row->
-                val chessPieces = gameStateTest.pieces[row]
+            repeat(gameState.pieces.count()) { row->
+                val chessPieces = gameState.pieces[row]
                 repeat(chessPieces.count()) {column->
                     val chessPiece = chessPieces[column]
                     chessPiece?.let {
-                        if (it != gameStateTest.movingPiece){
-                            //val img=pieces[it.resId]!!
+                        if (it != gameState.movingPiece){
                             val img=images[Pair(it.player,it.rank)]!!
                             translate(
                                 left = pieceSize * (it.column - 1) ,
@@ -194,8 +196,7 @@ fun ChessBoard(
                     }
                 }
             }
-            gameStateTest.movingPiece?.let { piece->
-                //val img=pieces[piece.resId]!!
+            gameState.movingPiece?.let { piece->
                 val img=images[Pair(piece.player,piece.rank)]!!
                 translate(
                     left = (if (isDragging) offsetX else pieceSize * (piece.column - 1)).coerceIn(0f,boardSize-pieceSize) ,
